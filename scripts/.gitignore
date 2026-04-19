@@ -1,0 +1,6 @@
+venv
+notulen/*
+input.docx
+~$put.docx
+output.xlsx
+.DS_Store
