@@ -32,7 +32,6 @@
     Zondag: false
   });
 
-  // --- Helpers ---
   function getPersonColor(name) {
     const bestuurIndex = BESTUUR_NAMEN.indexOf(name);
     if (bestuurIndex !== -1) return BESTUUR_KLEUREN[bestuurIndex % BESTUUR_KLEUREN.length];
@@ -110,6 +109,40 @@
     selectBestuur();
     mounted = true;
   });
+
+  let averageStats = $derived.by(() => {
+    if (!data || !data.rawData || selectedNames.size === 0) return [];
+
+    const weeksArray = data.weeks;
+    const namesArray = Array.from(selectedNames);
+
+    return namesArray
+      .map((name) => {
+        const personShifts = data.rawData.filter(
+          (d) => String(d.Naam).trim() === String(name).trim()
+        );
+
+        if (personShifts.length === 0) return { name, avg: 0, total: 0 };
+
+        const weekIndices = personShifts
+          .map((s) => weeksArray.indexOf(s['Week van']))
+          .filter((i) => i !== -1);
+        const firstWeekIdx = Math.min(...weekIndices);
+        const lastWeekIdx = Math.max(...weekIndices);
+
+        const activeWeeksCount = lastWeekIdx - firstWeekIdx + 1;
+        const totalShifts = personShifts.length;
+        const avg = totalShifts / activeWeeksCount;
+
+        return {
+          name,
+          avg: avg.toFixed(2),
+          total: totalShifts,
+          activeWeeks: activeWeeksCount
+        };
+      })
+      .sort((a, b) => b.avg - a.avg);
+  });
 </script>
 
 <div class="app-layout">
@@ -169,6 +202,28 @@
     {:else}
       <div class="empty-state">Laden of geen data gevonden...</div>
     {/if}
+
+    <section class="stats-section">
+      <div class="spacer"></div>
+      <h2>Gemiddelde Shifts per Week per Persoon</h2>
+
+      <div class="stats-grid">
+        {#each averageStats as stat (stat.name)}
+          <div class="stat-card" style="border-left: 4px solid {getPersonColor(stat.name)}">
+            <div class="stat-header">
+              <span class="stat-name {BESTUUR_NAMEN.includes(stat.name) ? 'font-bold' : ''}">
+                {stat.name}
+              </span>
+              <span class="stat-avg">{stat.avg}</span>
+            </div>
+            <div class="stat-details">
+              <span>Totaal: <strong>{stat.total}</strong> shifts</span>
+              <span>Periode: <strong>{stat.activeWeeks}</strong> weken</span>
+            </div>
+          </div>
+        {/each}
+      </div>
+    </section>
   </main>
 </div>
 
@@ -272,8 +327,47 @@
   h2 {
     margin: 0;
   }
-  .description {
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .stat-name {
+    font-size: 1rem;
+    color: #333;
+  }
+  .stat-avg {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #1976d2;
+  }
+
+  .stat-details {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8rem;
     color: #666;
-    margin: 0.5rem 0 2rem 0;
+  }
+
+  .spacer {
+    height: 3rem;
   }
 </style>
