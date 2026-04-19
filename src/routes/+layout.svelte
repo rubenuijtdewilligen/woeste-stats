@@ -14,6 +14,9 @@
       <a href={resolve('/shiftmix')} class:active={$page.url.pathname === '/shiftmix'}>
         Shift Mix
       </a>
+      <a href={resolve('/sociaal')} class:active={$page.url.pathname === '/sociaal'}>
+        Sociale Trends
+      </a>
     </div>
   </div>
 </nav>
