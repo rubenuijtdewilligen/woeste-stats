@@ -10,23 +10,23 @@ import svelteConfig from './svelte.config.js';
 const gitignorePath = path.resolve(import.meta.dirname, '.gitignore');
 
 export default defineConfig([
-	includeIgnoreFile(gitignorePath),
-	js.configs.recommended,
-	svelte.configs.recommended,
-	prettier,
-	svelte.configs.prettier,
-	{
-		languageOptions: { globals: { ...globals.browser, ...globals.node } }
-	},
+  includeIgnoreFile(gitignorePath),
+  js.configs.recommended,
+  svelte.configs.recommended,
+  prettier,
+  svelte.configs.prettier,
+  {
+    languageOptions: { globals: { ...globals.browser, ...globals.node } }
+  },
 
-	{
-		files: ['**/*.svelte', '**/*.svelte.js'],
-		languageOptions: { parserOptions: { svelteConfig } }
-	},
+  {
+    files: ['**/*.svelte', '**/*.svelte.js'],
+    languageOptions: { parserOptions: { svelteConfig } }
+  },
 
-	{
-		// Override or add rule settings here, such as:
-		// 'svelte/button-has-type': 'error'
-		rules: {}
-	}
+  {
+    // Override or add rule settings here, such as:
+    // 'svelte/button-has-type': 'error'
+    rules: {}
+  }
 ]);
