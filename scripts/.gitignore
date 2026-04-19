@@ -3,4 +3,5 @@ notulen/*
 input.docx
 ~$put.docx
 output.xlsx
+~$output.xlsx
 .DS_Store
