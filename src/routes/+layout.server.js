@@ -31,11 +31,14 @@ export const load = async () => {
 
   const names = [...new Set(rawData.map((d) => d.Naam))].sort();
 
-  const simplifiedRaw = rawData.map((row) => ({
-    'Week van': formatDate(row['Week van']),
-    Naam: row.Naam,
-    Dag: row.Dag
-  }));
+  const simplifiedRaw = rawData.map((row) => {
+    return {
+      'Week van': formatDate(row['Week van']),
+      Naam: row.Naam || row['Naam'],
+      Dag: row.Dag || row['Dag'],
+      Shift: row.Shift || row['shift'] || 'Onbekend'
+    };
+  });
 
   return {
     weeks: sortedWeeks,
